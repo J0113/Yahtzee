@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Yahtzee · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: "Geist", -apple-system, system-ui, sans-serif;
+    color: #1C1917;
+    -webkit-font-smoothing: antialiased;
+    background: #F2EBDC;
+  }
+  button { font-family: inherit; }
+  input { font-family: inherit; }
+
+  /* Responsive shell — always full-bleed, single inner column */
+  .app-page {
+    min-height: 100dvh;
+    width: 100%;
+    display: block;
+  }
+  .app-shell {
+    width: 100%;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes dice-tumble {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    25%  { transform: translateY(-12px) rotate(-18deg) scale(1.04); }
+    50%  { transform: translateY(-6px) rotate(20deg) scale(0.96); }
+    75%  { transform: translateY(-10px) rotate(-8deg) scale(1.02); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
+  }
+  @keyframes dice-shake {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    20%  { transform: translate(-1.5px, 1.5px) rotate(-4deg); }
+    40%  { transform: translate(1.8px, -1px) rotate(3deg); }
+    55%  { transform: translate(-1px, -1.5px) rotate(-2deg); }
+    75%  { transform: translate(1.5px, 1px) rotate(4deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+  @keyframes sheet-slide {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(0); }
+  }
+  @keyframes sheet-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes toast-in {
+    0% { opacity: 0; transform: translate(-50%, -12px); }
+    100% { opacity: 1; transform: translate(-50%, 0); }
+  }
+  @keyframes recap-flash {
+    0%   { background-color: rgba(226,109,92,0.55); }
+    100% { background-color: rgba(226,109,92,0.18); }
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="yahtzee-dice.jsx"></script>
+  <script type="text/babel" src="yahtzee-scorecard.jsx"></script>
+  <script type="text/babel" src="yahtzee-ai.jsx"></script>
+  <script type="text/babel" src="yahtzee-screens.jsx"></script>
+  <script type="text/babel" src="yahtzee-app.jsx"></script>
+</body>
+</html>
