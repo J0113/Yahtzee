@@ -94,6 +94,10 @@ Category keys: `ones`, `twos`, `threes`, `fours`, `fives`, `sixes`, `threeKind`,
 
 AI is fully isolated in `yahtzee-ai.jsx`. Two public functions:
 
+The CPU opponent is named per difficulty (`CPU_NAMES` in `yahtzee-app.jsx`):
+`easy → Mouse`, `normal → Queenie`, `hard → Cleo`. The internal difficulty keys
+(`easy`/`normal`/`hard`) are unchanged — only display names differ.
+
 ### `cpuHoldStrategy(dice, scores, difficulty) → Die[]`
 Returns new dice array with `.held` flags updated. Called after each roll during CPU turn.
 
@@ -110,7 +114,7 @@ Returns the category key and points to score.
 |-----------|---------------|
 | `easy` | First positive-scoring row (not best), may accept zero rows |
 | `normal` | Best-scoring row with mild bias toward Yahtzee/straights (+5–15 pts) |
-| `hard` | Strategic value = actual_pts + category bonus (Yahtzee +60, lgStraight +45, smStraight +25, fullHouse +20); tracks upper section progress toward +35 bonus; saves Chance for late game |
+| `hard` | Monte-Carlo EV + always-optimal pick via `_categoryValue`. Par-aware upper scoring: below-par fills are penalized steeply (`surplus*2.2`), above-par mildly (`*0.5`), with a floor so a positive fill never loses to zeroing the box. Two 6's (-13.2) scores below two 2's (-4.4), so it dumps the low face and keeps chasing 3+ of a high face rather than locking a bonus deficit. Strongly preserves Chance early (penalty `~(remaining-1)*3`, decaying to 0), so it sacrifices a cheap upper box before spending Chance |
 
 ### CPU Turn Flow (yahtzee-app.jsx)
 ```

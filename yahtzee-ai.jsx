@@ -7,7 +7,9 @@
 // Difficulty tiers:
 //   easy   — heuristic + ~25% blunder rate (random category, sometimes break a hand)
 //   normal — Monte-Carlo EV with low sample count + top-K random pick (some variance)
-//   hard   — Monte-Carlo EV with high sample count + always-optimal pick
+//   hard   — Monte-Carlo EV with high sample count + always-optimal pick.
+//            Value model hoards Chance early and is par-aware on the upper
+//            section (won't dump two 6's below par while chasing the 63 bonus).
 //
 // Depends on UPPER_CATS, LOWER_CATS, scoreFor from yahtzee-scorecard.jsx
 // (loaded before this file).
@@ -79,10 +81,27 @@ function _categoryValue(catKey, pts, scores) {
     const upperNeeded = Math.max(0, 63 - upperProg);
     if (upperNeeded > 0) {
       const faceVal = upperIdx + 1;
-      const par = faceVal * 3; // par score needed to stay on pace for bonus
-      // Reward overshoots, penalize undershoots slightly
-      v += (pts - par) * 0.6 + 4;
+      const par = faceVal * 3; // par = three of a face = on pace for the bonus
+      const surplus = pts - par; // scales with faceVal
+      // Par-aware while chasing the bonus: locking a high box BELOW par burns
+      // bonus headroom you can't recover, so penalize shortfalls steeply; reward
+      // surplus only mildly. The steep below-par slope makes two 6's (surplus -6
+      // → -13.2) score worse than two 2's (surplus -2 → -4.4), so the AI dumps
+      // the low face and keeps chasing 3+ sixes. 3+ of a face is at/above par.
+      v += surplus >= 0 ? surplus * 0.5 : surplus * 2.2;
+      // Floor: a positive fill must never look worse than zeroing the same box,
+      // or the AI would throw away real points (e.g. a lone 6) for "bonus value".
+      const floor = (SACRIFICE_VALUE[catKey] ?? -15) + 1;
+      if (v < floor) v = floor;
     }
+  }
+
+  // Chance: a flexible safety net. Hoard it early — a mediocre sum should not
+  // beat sacrificing a cheap box. Penalty decays as the card fills, so Chance
+  // becomes usable late and still beats zeroing a hard category when forced.
+  if (catKey === 'chance') {
+    const remainingCount = _remaining(scores).length;
+    v -= Math.max(0, remainingCount - 1) * 3;
   }
 
   // Retention bonus — having a positive score in a hard category is much

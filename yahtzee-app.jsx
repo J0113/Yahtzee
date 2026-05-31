@@ -1,6 +1,9 @@
 // Yahtzee — main app shell. Routes between screens, owns game state.
 // AI logic is in yahtzee-ai.jsx (cpuHoldStrategy, cpuPickCategory).
 
+// CPU opponent name per difficulty tier.
+const CPU_NAMES = { easy: 'Mouse', normal: 'Queenie', hard: 'Cleo' };
+
 function makeEmptyScores() { return {}; }
 
 function rollOne() { return 1 + Math.floor(Math.random() * 6); }
@@ -205,7 +208,7 @@ function App() {
               setDifficulty(d);
               startGame([
                 { name: 'You', color: PLAYER_COLORS[0], isCpu: false },
-                { name: 'Cleo', color: PLAYER_COLORS[1], isCpu: true },
+                { name: CPU_NAMES[d], color: PLAYER_COLORS[1], isCpu: true },
               ]);
             }}
           />

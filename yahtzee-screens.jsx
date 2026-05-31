@@ -286,31 +286,6 @@ function SetupModeScreen({ onPick, onBack, accent }) {
           title="vs Computer"
           sub="Solo round against an AI opponent. Choose difficulty."
         />
-        <div style={{
-          marginTop: 8, padding: '14px 16px',
-          background: 'rgba(28,25,23,0.04)', borderRadius: 14,
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'rgba(28,25,23,0.06)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h10M4 18h16" stroke="#1C1917" strokeWidth="1.6" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: '"Geist", sans-serif', fontSize: 14, fontWeight: 500,
-              color: 'rgba(28,25,23,0.55)',
-            }}>Online · Coming soon</div>
-            <div style={{
-              fontFamily: '"Geist", sans-serif', fontSize: 12,
-              color: 'rgba(28,25,23,0.4)', marginTop: 1,
-            }}>Play strangers around the world</div>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -318,7 +293,7 @@ function SetupModeScreen({ onPick, onBack, accent }) {
 
 // ─── Setup: Difficulty ───────────────────────────────────────────────────────
 
-function DifficultyCard({ label, sub, dots, selected, onClick, accent }) {
+function DifficultyCard({ label, tag, sub, dots, selected, onClick, accent }) {
   return (
     <button
       onClick={onClick}
@@ -344,6 +319,13 @@ function DifficultyCard({ label, sub, dots, selected, onClick, accent }) {
         ))}
       </div>
       <div>
+        {tag && (
+          <div style={{
+            fontFamily: '"JetBrains Mono", monospace',
+            fontSize: 9, letterSpacing: 1.2, textTransform: 'uppercase',
+            opacity: selected ? 0.55 : 0.4, marginBottom: 4,
+          }}>{tag}</div>
+        )}
         <div style={{
           fontFamily: '"Instrument Serif", Georgia, serif', fontSize: 26,
           lineHeight: 1, letterSpacing: -0.4,
@@ -367,7 +349,8 @@ function SetupDifficultyScreen({ onPick, onBack, accent }) {
           display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8,
         }}>
           <DifficultyCard
-            label="Easy"
+            label="Mouse"
+            tag="Easy"
             sub="Holds the obvious. Misses the clever."
             dots={1}
             selected={selected === 'easy'}
@@ -375,7 +358,8 @@ function SetupDifficultyScreen({ onPick, onBack, accent }) {
             accent={accent}
           />
           <DifficultyCard
-            label="Normal"
+            label="Queenie"
+            tag="Medium"
             sub="Plays a clean game with the odd risk."
             dots={2}
             selected={selected === 'normal'}
@@ -383,7 +367,8 @@ function SetupDifficultyScreen({ onPick, onBack, accent }) {
             accent={accent}
           />
           <DifficultyCard
-            label="Hard"
+            label="Cleo"
+            tag="Hard"
             sub="Counts probabilities. Punishes mistakes."
             dots={3}
             selected={selected === 'hard'}
@@ -403,10 +388,10 @@ function SetupDifficultyScreen({ onPick, onBack, accent }) {
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: 10, letterSpacing: 1.2, textTransform: 'uppercase',
             color: 'rgba(28,25,23,0.45)', marginBottom: 6,
-          }}>What "{selected}" plays like</div>
-          {selected === 'easy' && "Cleo will go for upper-section sums and accept what the dice give. Forget the straights."}
-          {selected === 'normal' && "Cleo balances the upper bonus against big plays. Will chase a Yahtzee if it's free."}
-          {selected === 'hard' && "Cleo evaluates expected value at every roll. Sacrifices upper bonus to lock big lower scores. Watch out."}
+          }}>How {selected === 'easy' ? 'Mouse' : selected === 'normal' ? 'Queenie' : 'Cleo'} plays</div>
+          {selected === 'easy' && "Mouse will go for upper-section sums and accept what the dice give. Forget the straights."}
+          {selected === 'normal' && "Queenie balances the upper bonus against big plays. Will chase a Yahtzee if it's free."}
+          {selected === 'hard' && "Cleo evaluates expected value at every roll. Hoards Chance for the endgame and chases the 63-point upper bonus hard. Watch out."}
         </div>
 
         <div style={{ flex: 1 }} />
@@ -474,10 +459,11 @@ function PlayerRow({ player, idx, onName, onRemove, canRemove }) {
 }
 
 function SetupPlayersScreen({ mode, difficulty, onStart, onBack, accent }) {
+  const cpuName = { easy: 'Mouse', normal: 'Queenie', hard: 'Cleo' }[difficulty] ?? 'Cleo';
   const initial = mode === 'cpu'
     ? [
         { name: 'You', color: PLAYER_COLORS[0], isCpu: false },
-        { name: 'Cleo', color: PLAYER_COLORS[1], isCpu: true },
+        { name: cpuName, color: PLAYER_COLORS[1], isCpu: true },
       ]
     : [
         { name: '', color: PLAYER_COLORS[0], isCpu: false },
@@ -499,7 +485,7 @@ function SetupPlayersScreen({ mode, difficulty, onStart, onBack, accent }) {
       <BackBar
         onBack={onBack}
         subtitle="Step 2 of 2"
-        title={mode === 'cpu' ? 'You and Cleo' : 'Who\u2019s playing?'}
+        title={mode === 'cpu' ? `You and ${cpuName}` : 'Who\u2019s playing?'}
       />
       <div style={{ padding: '14px 18px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
         {mode === 'cpu' && (
